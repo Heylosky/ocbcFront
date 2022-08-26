@@ -41,4 +41,10 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach((to, from) => {
+  if (window.sessionStorage.getItem('isAuth') !== 'true' && to.name !== 'login') {
+    return { name: 'login' }
+  }
+})
+
 export default router

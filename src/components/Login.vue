@@ -136,6 +136,7 @@ export default {
           this.isFail = true
         }
         if (res.data.status === "1") {
+          window.sessionStorage.setItem('isAuth', 'true')
           this.$router.push('/people/list')
         }
       }, err => {

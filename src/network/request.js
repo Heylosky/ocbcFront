@@ -20,8 +20,8 @@ export function requestGet(url, config, success, failure) {
 
 export function requestGet2(config, success, failure) {
     const instance10 = axios.create({
-        // baseURL: 'http://127.0.0.1:8000',
-        baseURL: 'https://henry.sdesk.vip:8010',
+        baseURL: 'https://admin.orangemeeting.com:8010',
+        // baseURL: 'https://henry.sdesk.vip:8010',
         timeout: 5000,
         withCredentials: true,
     })
@@ -36,8 +36,8 @@ export function requestGet2(config, success, failure) {
 export function requestPost(url, data, config, success, failure) {
     const instancePost = axios.create({
         method: 'post',
-        // baseURL: 'http://127.0.0.1:8000',
-        baseURL: 'https://henry.sdesk.vip:8010',
+        baseURL: 'https://admin.orangemeeting.com:8010',
+        // baseURL: 'https://henry.sdesk.vip:8010',
         headers: {
             "Content-Type": "application/json"
         },

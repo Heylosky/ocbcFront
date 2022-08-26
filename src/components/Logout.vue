@@ -16,6 +16,7 @@ export default {
     }
   },
   mounted() {
+    window.sessionStorage.removeItem('isAuth')
     let timer = setInterval(() => {
       if(this.timer > 0) {
         this.timer--
