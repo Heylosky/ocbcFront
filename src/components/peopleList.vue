@@ -64,8 +64,8 @@
     <span v-show="curSelected.length !== 0" style="float: left">Currently select {{curSelected.length}} of total {{params.totalNumber}}</span>
     <div v-show="true" style="background-color: white; width: 100%; height:10px">
       <div v-show="changeAlt" style="padding: 5px; font-size: 5px; text-align: right; float: right">
-        <span style="font-weight: bold"><img src="../assets/img/pic/idea.png" style="float: left; height: 15px">Note: </span>Changes have been on this page, if latest changes are not updated automatically,<br>
-        Click "Refresh" to reload to view the latest data.
+        <span style="font-weight: bold"><img src="../assets/img/pic/idea.png" style="float: left; height: 15px">Note: </span>If latest changes are not updated automatically,<br>
+        click "Refresh" to view the latest data.
       </div>
     </div>
     <nav aria-label="Page navigation">

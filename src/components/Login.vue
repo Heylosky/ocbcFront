@@ -2,7 +2,7 @@
   <div class="login">
     <input class="txtInput" type="text" v-model="user_name" @keyup="verifyFunc" placeholder="Username">
     <p></p>
-    <input class="txtInput" type="password" v-model.lazy="password" placeholder="PIN">
+    <input class="txtInput" type="password" v-model.lazy="password" placeholder="Password">
     <p class="alert" v-if="ifShow">Username or password is incorrect, please re-enter</p>
     <div class="OTPbutton">
       <button @click="rsaFunc" :class="{verifyBtnDis: this.isDisabled, verifyBtnEnb: !this.isDisabled}" :disabled="isDisabled">Request OTP</button>
