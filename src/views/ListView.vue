@@ -56,6 +56,7 @@ export default {
     change() {
       this.changeAlt = true
       this.$refs.list.curSelected = []
+      setTimeout(this.$refs.list.getData, 2000)
     },
     refreshed() {
       this.changeAlt = false
