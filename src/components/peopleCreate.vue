@@ -27,7 +27,7 @@
           <input class="addInput" type="password" id="password" v-model.lazy="person.customAttributes.webPassword" @focusout="pwdFmt"><br>
           <span style="font-size: 5px">password must contain at least 7 character, and include 1<br>special characters from below: !@#$%^&*</span>
           <p v-show="pwdFmtErr">
-            <span class="alert">Unmeet safety rules, please re-enter</span>
+            <span class="alert">Incorrect format, please re-enter</span>
           </p>
         </td>
       </tr>
@@ -55,6 +55,9 @@
           <input class="addInput" type="text" id="phone" v-model.lazy="person.contactInformation.phone[0].number" placeholder="please add country code, eg.65xxxxxxxx" @focusout="phoneFmt">
           <p v-if="phoneFmtErr">
             <span class="alert">Incorrect format, please re-enter</span>
+          </p>
+          <p v-show="phoneInUsed">
+            <span class="alert">This number already in used by another person</span>
           </p>
         </td>
       </tr>
@@ -168,6 +171,7 @@ export default {
       fNameIsNull: true,
       lNameFmtErr: false,
       lNameIsNull: true,
+      phoneInUsed: false,
       phoneFmtErr: false,
       phoneIsNull: true,
       hostACFmtErr: false,
@@ -187,7 +191,7 @@ export default {
   computed: {
     saveState() {
       let arr = [this.emailInUsed, this.emailFmtErr, this.emailIsNull, this.pwdFmtErr, this.pwdIsNull, this.fNameFmtErr,
-        this.fNameIsNull, this.lNameFmtErr, this.lNameIsNull, this.phoneFmtErr, this.phoneIsNull, this.hostACFmtErr,
+        this.fNameIsNull, this.lNameFmtErr, this.lNameIsNull, this.phoneInUsed, this.phoneFmtErr, this.phoneIsNull, this.hostACFmtErr,
       this.hostACIsNull, this.attendeeACFmtErr, this.attendeeACIsNull, this.hostPINFmtErr, this.hostPINIsNull, this.audioPINFmtErr,
       this.audioPINIsNull, this.meetingIDFmtErr, this.meetingIDIsNull, this.ivrPwdFmtErr, this.ivrPwdIsNull]
       return arr.some(x => x)
@@ -267,11 +271,35 @@ export default {
       const phone = /^[0-9]+$/
       if (phone.test(this.person.contactInformation.phone[0].number)) {
         this.phoneFmtErr = false
-        this.$emit("saveState", this.saveState)
+        this.checkPhone()
       } else {
         this.phoneFmtErr = true
+        this.phoneInUsed = false
         this.$emit("saveState", this.saveState)
       }
+    },
+    checkPhone() {
+      let formData = new FormData()
+      formData.append('phone', this.person.contactInformation.phone[0].number)
+      requestPost('/people/person/verify/phone', formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
+      }, res => {
+        console.log(res);
+        if (res.data.isApproved) {
+          this.phoneInUsed = false
+          this.$emit("saveState", this.saveState)
+        } else {
+          this.phoneInUsed = true
+          this.$emit("saveState", this.saveState)
+        }
+      }, err => {
+        console.log(err);
+        this.phoneInUsed = true
+        this.$emit("saveState", this.saveState)
+      })
     },
     hostACFmt() {
       this.hostACIsNull = false

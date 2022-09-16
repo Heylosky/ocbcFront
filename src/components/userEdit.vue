@@ -43,6 +43,9 @@
           <p v-if="phoneFmtErr">
             <span class="alert">Incorrect format, please re-enter</span>
           </p>
+          <p v-show="phoneInUsed">
+            <span class="alert">This number already in used by another person</span>
+          </p>
         </td>
       </tr>
       <tr>
@@ -65,13 +68,14 @@ export default {
     return {
       fNameFmtErr: false,
       lNameFmtErr: false,
+      phoneInUsed: false,
       phoneFmtErr: false,
       needReset: true,
     }
   },
   computed: {
     saveState() {
-      let arr = [this.fNameFmtErr, this.lNameFmtErr, this.phoneFmtErr]
+      let arr = [this.fNameFmtErr, this.lNameFmtErr, this.phoneInUsed, this.phoneFmtErr]
       return arr.some(x => x)
     }
   },
@@ -103,11 +107,34 @@ export default {
       const phone = /^[0-9]+$/
       if (phone.test(this.person.contactInformation.phone[0].number)) {
         this.phoneFmtErr = false
-        this.$emit("saveState", this.saveState)
+        this.checkPhone()
       } else {
         this.phoneFmtErr = true
         this.$emit("saveState", this.saveState)
       }
+    },
+    checkPhone() {
+      let formData = new FormData()
+      formData.append('phone', this.person.contactInformation.phone[0].number)
+      requestPost('/people/person/verify/phone', formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
+      }, res => {
+        console.log(res);
+        if (res.data.isApproved) {
+          this.phoneInUsed = false
+          this.$emit("saveState", this.saveState)
+        } else {
+          this.phoneInUsed = true
+          this.$emit("saveState", this.saveState)
+        }
+      }, err => {
+        console.log(err);
+        this.phoneInUsed = true
+        this.$emit("saveState", this.saveState)
+      })
     },
     save() {
       let formData = new FormData()

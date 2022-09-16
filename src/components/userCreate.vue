@@ -46,6 +46,9 @@
           <p v-if="phoneFmtErr">
             <span class="alert">Incorrect format, please re-enter</span>
           </p>
+          <p v-show="phoneInUsed">
+            <span class="alert">This number already in used by another person</span>
+          </p>
         </td>
       </tr>
       <tr>
@@ -97,13 +100,14 @@ export default {
       fNameIsNull: true,
       lNameFmtErr: false,
       lNameIsNull: true,
+      phoneInUsed: false,
       phoneFmtErr: false,
       phoneIsNull: true,
     }
   },
   computed: {
     saveState() {
-      let arr = [this.emailInUsed, this.emailFmtErr, this.emailIsNull, this.fNameFmtErr, this.fNameIsNull, this.lNameFmtErr, this.lNameIsNull, this.phoneFmtErr, this.phoneIsNull]
+      let arr = [this.emailInUsed, this.emailFmtErr, this.emailIsNull, this.fNameFmtErr, this.fNameIsNull, this.lNameFmtErr, this.lNameIsNull, this.phoneInUsed, this.phoneFmtErr, this.phoneIsNull]
       return arr.some(x => x)
     }
   },
@@ -171,11 +175,35 @@ export default {
       const phone = /^[0-9]+$/
       if (phone.test(this.person.contactInformation.phone[0].number)) {
         this.phoneFmtErr = false
-        this.$emit("saveState", this.saveState)
+        this.checkPhone()
       } else {
         this.phoneFmtErr = true
+        this.phoneInUsed = false
         this.$emit("saveState", this.saveState)
       }
+    },
+    checkPhone() {
+      let formData = new FormData()
+      formData.append('phone', this.person.contactInformation.phone[0].number)
+      requestPost('/people/person/verify/phone', formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
+      }, res => {
+        console.log(res);
+        if (res.data.isApproved) {
+          this.phoneInUsed = false
+          this.$emit("saveState", this.saveState)
+        } else {
+          this.phoneInUsed = true
+          this.$emit("saveState", this.saveState)
+        }
+      }, err => {
+        console.log(err);
+        this.phoneInUsed = true
+        this.$emit("saveState", this.saveState)
+      })
     },
     SaveMsg() {
       let formData = new FormData()
